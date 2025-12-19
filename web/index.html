@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>RH API</title>
+    
+    <link rel="icon" href="favicon.png?v=2024" type="image/png">
+
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/pages.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar-left" id="sidebar-left">
+            <div class="sidebar-brand">
+                <div class="brand-main">
+                    <div class="logo-icon">R</div>
+                    <span class="app-title">RH API</span>
+                </div>
+                <div class="toggle-btn" id="toggle-left" aria-label="折叠菜单">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-item active" data-target="page-api">
+                    <span class="icon">⚙️</span><span class="text">API配置</span>
+                </div>
+                <div class="nav-item" data-target="page-new-task">
+                    <span class="icon">➕</span><span class="text">新建任务</span>
+                </div>
+                <div class="nav-item" data-target="page-preset">
+                    <span class="icon">📋</span><span class="text">预设任务</span>
+                </div>
+                <div class="nav-item" data-target="page-gallery">
+                    <span class="icon">🖼️</span><span class="text">作品库</span>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="main-content-wrapper">
+            <header class="app-header">
+                <div class="header-left-spacer"></div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-success btn-lg" id="btn-restart">
+                        ↺ 重启应用
+                    </button>
+                    <button class="btn btn-danger btn-lg" id="btn-exit" aria-label="退出应用">
+                        ✕ 退出应用
+                    </button>
+                </div>
+            </header>
+
+            <div class="content-body-row">
+                <main class="content-area">
+                    <section id="page-api" class="page-section active">
+                        <div class="api-layout">
+                             
+                            <div class="api-actions-header">
+                                <button class="btn btn-primary" id="btn-save-preset">
+                                    💾 保存配置
+                                </button>
+                                <button class="btn btn-warning" id="btn-apply-preset">
+                                    ⚡ 应用配置
+                                </button>
+                            </div>
+ 
+                            <div class="card api-key-card">
+                                <h3>🔐 API 密钥管理</h3>
+                                 
+                                <div class="api-source-row">
+                                    <span class="source-label">API密钥获取路径：</span>
+                                    <div class="source-btns">
+                                        <a href="https://www.runninghub.cn/enterprise-api/consumerApi/?inviteCode=rh-v1045" 
+                                         target="_blank" 
+                                         rel="noopener noreferrer" 
+                                         class="btn btn-outline btn-sm">
+                                            🚩🇨🇳 国内站点获取
+                                        </a>
+                                        <a href="https://www.runninghub.ai/enterprise-api/consumerApi/?inviteCode=rh-v1045" 
+                                         target="_blank" 
+                                         rel="noopener noreferrer" 
+                                         class="btn btn-outline btn-sm">
+                                            🌏 海外站点获取
+                                        </a>
+                                    </div>
+                                </div>
+ 
+                                <div class="api-key-input-area">
+                                    <div class="api-key-row">
+                                        <div class="input-wrapper-relative">
+                                            <input type="password" id="input-api-key" placeholder="输入32位API密钥" class="form-input" aria-label="API密钥输入框" autocomplete="new-password">
+                                            <span id="icon-check" class="check-icon-inner hidden">✅</span>
+                                            <span id="icon-error" class="error-icon-inner hidden">❌</span>
+                                        </div>
+ 
+                                        <div class="key-actions-group">
+                                            <button class="btn-icon" id="btn-toggle-key" title="显示/隐藏">👁️</button>
+                                            <button class="btn-icon" id="btn-lock-key" title="锁定/解锁">🔓</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+     
+                            <div class="card concurrency-card">
+                                <h3>🚀 任务并发设置</h3>
+                                <div class="concurrency-options" id="concurrency-group">
+                                    <button class="btn btn-outline btn-concurrency active" data-val="1">1并发</button>
+                                    <button class="btn btn-outline btn-concurrency" data-val="2">2并发</button>
+                                    <button class="btn btn-outline btn-concurrency" data-val="3">3并发</button>
+                                    <button class="btn btn-outline btn-concurrency" data-val="4">4并发</button>
+                                    <button class="btn btn-outline btn-concurrency" data-val="5">5并发</button>
+                                </div>
+                            </div>
+     
+                            <div class="card account-info-card">
+                                <div class="card-header-row">
+                                    <h3>📊 账户状态</h3>
+                                    <div class="controls">
+                                        <button class="btn btn-success" id="btn-query-account">查询信息</button>
+                                        <div class="toggle-switch-wrapper">
+                                            <span>轮询</span>
+                                            <label class="switch" aria-label="轮询开关">
+                                                <input type="checkbox" id="switch-polling">
+                                                <span class="slider round"></span>
+                                            </label>
+                                            <button class="btn-icon icon-setting" id="btn-set-poll-time" title="设置间隔">⚙️</button>
+                                        </div>
+                                        <span class="poll-status" id="poll-status-text">轮询已关闭</span>
+                                    </div>
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-box">
+                                        <span class="icon">⏳</span><span class="label">任务数量</span>
+                                        <span class="value" id="info-task-count">--</span>
+                                        <span class="sub-status" id="info-task-status">空闲</span>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="icon">💰</span><span class="label">RH币余额</span>
+                                        <span class="value" id="info-coins">--</span>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="icon">💳</span><span class="label">API余额</span>
+                                        <span class="value" id="info-money">--</span><span class="unit" id="info-currency">CNY</span>
+                                    </div>
+                                    <div class="info-box">
+                                        <span class="icon">🔗</span><span class="label">API类型</span>
+                                        <span class="value" id="info-type">--</span>
+                                    </div>
+                                </div>
+                            </div>
+     
+                        </div>
+                    </section>
+    
+                    <section id="page-new-task" class="page-section hidden">
+                        <div class="task-header">
+                            <button class="btn btn-primary btn-lg" id="btn-create-task-modal" aria-label="打开新建任务弹窗">
+                                ＋ 新建任务
+                            </button>
+                            <button class="btn btn-primary btn-outline btn-lg" id="btn-manage-tasks" aria-label="切换任务管理模式">
+                                🛠️ 任务管理
+                            </button>
+                        </div>
+                        
+                        <div class="task-bar-container">
+                            <div class="task-bar" id="new-task-bar">
+                                <span class="placeholder-text">暂无任务，请点击左上角创建</span>
+                            </div>
+                            <button class="btn btn-success btn-run-large" id="btn-run-new-task" aria-label="执行当前新建任务">
+                                🚀 发起运行
+                            </button>
+                        </div>
+    
+                        <div class="split-layout">
+                            <div class="panel panel-left">
+                                <div class="panel-header">📝 参数配置</div>
+                                
+                                <div class="panel-body" id="new-task-config-area">
+                                    <div class="empty-tip">请在上方选择一个任务</div>
+                                </div>
+                            </div>
+                            <div class="panel panel-right">
+                                <div class="panel-header">
+                                    <span>📺 结果预览</span>
+                                    
+                                    <div class="task-nav-group">
+                                        <button class="nav-task-btn" id="btn-task-newer-new" title="上一个任务 (更新)">❮</button>
+                                        <button class="nav-task-btn" id="btn-task-older-new" title="下一个任务 (更旧)">❯</button>
+                                        <span class="task-name-display" id="display-name-new"></span>
+                                    </div>
+                                </div>
+                                <div class="result-canvas" id="new-task-result-canvas">
+                                    <div class="canvas-placeholder">
+                                        <span class="placeholder-icon">🖼️</span>
+                                        <span>等待任务结果...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <section id="page-preset" class="page-section hidden">
+                        <div class="category-tabs">
+                            <button class="btn btn-lg tab-btn active" data-cat="image" aria-label="切换到图像分类">
+                                🖼️ 图像
+                            </button>
+                            <button class="btn btn-lg tab-btn" data-cat="video" aria-label="切换到视频分类">
+                                🎬 视频
+                            </button>
+                            <button class="btn btn-lg tab-btn" data-cat="text" aria-label="切换到文本分类">
+                                📝 文本
+                            </button>
+                            <button class="btn btn-lg tab-btn" data-cat="audio" aria-label="切换到音频分类">
+                                🎵 音频
+                            </button>
+                        </div>
+                        
+                        <div class="task-bar-container">
+                            <button class="btn btn-primary btn-outline btn-lg" id="btn-manage-presets-toggle">
+                                ⚙️ 管理预设
+                            </button>
+
+                            <div class="task-bar-scroll-wrapper">
+                                <button class="task-scroll-btn left hidden" id="btn-preset-scroll-left" aria-label="向左滚动">❮</button>
+                                <div class="task-bar" id="preset-task-bar"></div>
+                                <button class="task-scroll-btn right hidden" id="btn-preset-scroll-right" aria-label="向右滚动">❯</button>
+                            </div>
+    
+                            <button class="btn btn-success btn-run-large" id="btn-run-preset" aria-label="执行当前预设任务">
+                                🚀 发起运行
+                            </button>
+                        </div>
+    
+                        <div class="split-layout">
+                            <div class="panel panel-left">
+                                <div class="panel-header">📝 参数配置</div>
+                                
+                                <div class="panel-body" id="preset-config-area">
+                                    <div class="empty-tip">请选择一个功能</div>
+                                </div>
+                            </div>
+                            <div class="panel panel-right">
+                                <div class="panel-header">
+                                    <span>📺 结果预览</span>
+                                    
+                                    <div class="task-nav-group">
+                                        <button class="nav-task-btn" id="btn-task-newer-preset" title="上一个任务 (更新)">❮</button>
+                                        <button class="nav-task-btn" id="btn-task-older-preset" title="下一个任务 (更旧)">❯</button>
+                                        <span class="task-name-display" id="display-name-preset"></span>
+                                    </div>
+                                </div>
+                                <div class="result-canvas" id="preset-result-canvas">
+                                    <div class="canvas-placeholder">
+                                        <span class="placeholder-icon">🖼️</span>
+                                        <span>等待任务结果...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+    
+                    <section id="page-gallery" class="page-section hidden">
+                        <div class="gallery-layout">
+                            <div class="gallery-nav">
+                                <div class="gallery-tabs-group"> 
+                                    <button class="g-nav-btn active" data-type="images">Images</button>
+                                    <button class="g-nav-btn" data-type="videos">Videos</button>
+                                    <button class="g-nav-btn" data-type="audios">Audios</button>
+                                    <button class="g-nav-btn" data-type="texts">Texts</button>
+                                    <button class="g-nav-btn" data-type="others">Others</button>
+                                </div> 
+                                <button class="btn-icon-setting" id="btn-gallery-settings" title="设置文件索引路径">
+                                    ⚙️ 路径设置
+                                </button>
+                            </div>
+                            <div class="gallery-content">
+                                <div class="gallery-sidebar" id="gallery-sidebar">
+                                    <div class="file-list-header">
+                                        <span>文件名称</span>
+                                        <span>大小</span>
+                                    </div>
+                                    <div class="file-list" id="gallery-file-list">
+                                    </div>
+                                    <div class="file-status-bar">共 <span id="gallery-count">0</span> 个项目</div>
+                                </div>
+
+                                <div class="gallery-resizer" id="gallery-resizer" title="拖动调节宽度" ondragstart="return false;"></div>
+
+                                <div class="gallery-preview" id="gallery-preview-area">
+                                    <div class="preview-placeholder">请选择文件预览</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+    
+                <aside class="sidebar-right" id="sidebar-right"> 
+                     
+                    <div class="sidebar-collapsed-top"> 
+                        <div class="task-monitor-icon" id="task-monitor-icon-collapsed"> 
+                            <div class="monitor-border"></div> 
+                            <span class="monitor-count" id="monitor-count-collapsed">0</span> 
+                        </div> 
+                    </div> 
+                 
+                    <div class="sidebar-toggle-handle" id="sidebar-toggle-handle" title="折叠/展开任务列表"> 
+                        <span class="handle-icon">»</span> 
+                        <div class="handle-content-collapsed"> 
+                            <span class="text-vertical">任务列表</span> 
+                            <span class="icon-collapsed">«</span> 
+                        </div> 
+                    </div> 
+                 
+                    <div class="sidebar-header"> 
+                        <span class="title">任务列表</span> 
+                        <div class="task-monitor-icon" id="task-monitor-icon"> 
+                            <div class="monitor-border"></div> 
+                            <span class="monitor-count" id="monitor-count">0</span> 
+                        </div> 
+                    </div> 
+                 
+                    <div class="task-list-container" id="task-list"> 
+                        <div class="empty-task-list">暂无运行中任务</div> 
+                    </div> 
+                </aside>
+            </div>
+    
+            <footer class="app-footer">
+                <div class="status-left">
+                    <span class="status-dot online">●</span>
+                    <span class="status-text">系统就绪 | 在线</span>
+                </div>
+                <button class="btn-text" id="btn-show-log">📜 日志信息</button>
+            </footer>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden restart-overlay" id="modal-restart">
+        <div class="modal-window restart-window">
+            <div class="restart-icon">↺</div>
+            <h3 class="restart-title">正在重启应用...</h3>
+            <p class="restart-desc">请稍候，页面将自动刷新</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-log">
+        <div class="modal-window log-window">
+            <div class="modal-header">
+                <h3>日志信息</h3>
+                <div class="window-controls">
+                    <button class="btn-text" id="btn-log-pin">📌 固定</button>
+                    <button class="btn-text" id="btn-log-close">❌</button>
+                </div>
+            </div>
+            <div class="modal-body log-body">
+                <div class="log-panel">
+                    <div class="log-title">
+                        请求日志 
+                        <div class="log-tools">
+                            <button class="btn-xs" id="btn-log-req-wrap">换行</button>
+                            <button class="btn-xs" id="btn-log-req-copy">复制</button>
+                        </div>
+                    </div>
+                    <pre class="code-box" id="log-request"></pre>
+                </div>
+                <div class="log-panel">
+                    <div class="log-title">
+                        返回响应
+                        <div class="log-tools">
+                            <button class="btn-xs" id="btn-log-res-wrap">换行</button>
+                            <button class="btn-xs" id="btn-log-res-copy">复制</button>
+                        </div>
+                    </div>
+                    <pre class="code-box" id="log-response"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay hidden" id="modal-create-task">
+        <div class="modal-window create-task-window">
+            <div class="modal-header">
+                <input type="text" id="modal-task-name" placeholder="请输入任务名称" class="modal-title-input" aria-label="任务名称">
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="modal-btn-save">保存</button>
+                    <button class="btn btn-danger" id="modal-btn-cancel">取消</button>
+                </div>
+            </div>
+            <div class="modal-body split-body">
+                <div class="field-type-list">
+                    <div class="experimental-hint">实验性功能<br>待完善后开放</div>
+                    
+                    <button class="type-btn" data-type="STRING" disabled>STRING</button>
+                    <button class="type-btn" data-type="INT" disabled>INT</button>
+                    <button class="type-btn" data-type="FLOAT" disabled>FLOAT</button>
+                    <button class="type-btn" data-type="BOOLEAN" disabled>BOOLEAN</button>
+                    <button class="type-btn" data-type="SWITCH" disabled>SWITCH</button>
+                    <button class="type-btn" data-type="LIST" disabled>LIST</button>
+                    <button class="type-btn" data-type="IMAGE" disabled>IMAGE</button>
+                    <button class="type-btn" data-type="VIDEO" disabled>VIDEO</button>
+                    <button class="type-btn" data-type="AUDIO" disabled>AUDIO</button>
+                </div>
+                <div class="config-form-area">
+                    <div class="input-row">
+                        <label for="modal-webapp-id">应用ID</label>
+                        <input type="text" id="modal-webapp-id" class="form-input input-medium">
+                        <button class="btn btn-primary btn-sm" id="modal-btn-auto">自动获取</button>
+                    </div>
+                    <div class="params-table-header">
+                        <span>类型</span><span>描述</span><span>节点ID</span><span>字段名</span><span>字段值</span><span>操作</span>
+                    </div>
+                    <div class="params-list" id="modal-params-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-poll-setting">
+        <div class="modal-window poll-setting-window">
+            <div class="modal-header">
+                <h3>轮询时间间隔设置</h3>
+            </div>
+            <div class="modal-body center-content">
+                <div class="stepper-control">
+                    <button class="btn btn-outline stepper-btn" id="btn-poll-dec" aria-label="减少时间">➖</button>
+                    <input type="number" id="input-poll-interval" class="form-input stepper-input" value="5" min="3" max="60" readonly aria-label="轮询间隔秒数">
+                    <button class="btn btn-outline stepper-btn" id="btn-poll-inc" aria-label="增加时间">➕</button>
+                </div>
+                <div class="stepper-hint">有效范围: 3 ~ 60 秒</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-poll-cancel">取消</button>
+                <button class="btn btn-primary" id="btn-poll-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-save-preset">
+        <div class="modal-window preset-modal-window">
+            <div class="modal-header">
+                <h3>保存配置</h3>
+            </div>
+            <div class="modal-body center-content">
+                <div class="input-row full-width">
+                    <label for="input-preset-name" class="form-label-block">配置名称</label>
+                    <input type="text" id="input-preset-name" class="form-input" placeholder="请输入便于记忆的名称" aria-label="配置名称">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-save-preset-cancel">取消</button>
+                <button class="btn btn-primary" id="btn-save-preset-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-apply-preset">
+        <div class="modal-window preset-modal-window">
+            <div class="modal-header">
+                <h3>应用配置</h3>
+            </div>
+            <div class="modal-body">
+                <div class="preset-list-container" id="preset-list-area">
+                    <div class="empty-tip">暂无配置，请先保存</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-apply-preset-cancel">取消</button>
+                <button class="btn btn-primary" id="btn-apply-preset-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-path-settings">
+        <div class="modal-window path-settings-window">
+            <div class="modal-header">
+                <h3>📂 作品库索引路径设置</h3>
+            </div>
+            <div class="modal-body preset-edit-body">
+                <div class="experimental-hint preset-hint-text">
+                    支持相对路径 (如 outputs/images) 或绝对路径 (如 D:/MyArt/Images)。<br>修改后系统将从新路径读取文件。
+                </div>
+        
+                <div class="input-row full-width preset-edit-row">
+                    <label for="path-input-images" class="form-label-block preset-edit-label">Images</label>
+                    <input type="text" id="path-input-images" class="form-input">
+                </div>
+                <div class="input-row full-width preset-edit-row">
+                    <label for="path-input-videos" class="form-label-block preset-edit-label">Videos</label>
+                    <input type="text" id="path-input-videos" class="form-input">
+                </div>
+                <div class="input-row full-width preset-edit-row">
+                    <label for="path-input-audios" class="form-label-block preset-edit-label">Audios</label>
+                    <input type="text" id="path-input-audios" class="form-input">
+                </div>
+                <div class="input-row full-width preset-edit-row">
+                    <label for="path-input-texts" class="form-label-block preset-edit-label">Texts</label>
+                    <input type="text" id="path-input-texts" class="form-input">
+                </div>
+                <div class="input-row full-width preset-edit-row">
+                    <label for="path-input-others" class="form-label-block preset-edit-label">Others</label>
+                    <input type="text" id="path-input-others" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-path-cancel">取消</button>
+                <button class="btn btn-primary" id="btn-path-save">保存并刷新</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="modal-edit-preset-id">
+        <div class="modal-window preset-edit-window">
+            <div class="modal-header">
+                <h3>🛠️ 修改预设任务</h3>
+            </div>
+            <div class="modal-body preset-edit-body">
+                
+                <div class="input-row full-width preset-edit-row">
+                    <label for="input-edit-preset-name" class="form-label-block preset-edit-label">任务名称</label>
+                    <input type="text" id="input-edit-preset-name" class="form-input" placeholder="请输入自定义名称">
+                </div>
+
+                <div class="input-row full-width preset-edit-row">
+                    <label for="input-edit-preset-id" class="form-label-block preset-edit-label">WebAPP ID</label>
+                    <input type="text" id="input-edit-preset-id" class="form-input" placeholder="请输入19位纯数字 ID">
+                </div>
+
+                <div class="experimental-hint preset-hint-text">
+                    ⚠️ 请确保 ID 为 RunningHub 真实有效的应用 ID!
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-left-align" id="btn-edit-preset-delete">🗑️ 删除任务</button>
+                
+                <button class="btn btn-danger" id="btn-edit-preset-cancel">取消</button>
+                <button class="btn btn-primary" id="btn-edit-preset-save">保存更改</button>
+            </div>  
+        </div>
+    </div>
+
+    <script src="scripts/api.js"></script>
+    <script src="scripts/components.js"></script>
+    <script src="scripts/layout.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+    "paths": {
+        "images": "outputs/images",
+        "videos": "outputs/videos",
+        "audios": "outputs/audios",
+        "texts": "outputs/texts",
+        "others": "outputs/others"
+    }
+}

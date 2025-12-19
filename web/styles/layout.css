@@ -1,0 +1,670 @@
+/* web/styles/layout.css */
+:root {
+    --primary-color: #6f42c1;       
+    --primary-hover: #5a32a3;
+    --primary-light: #f3f0ff;       
+    --bg-color: #f4f7f9;            
+    --sidebar-bg: #ffffff;          
+    --header-bg: #ffffff;
+    --text-main: #1f2937;           
+    --text-sub: #6b7280;
+    --border-color: #e5e7eb;
+    --success-color: #10b981;       
+    --warning-color: #f59e0b;       
+    --danger-color: #ef4444;        
+    --header-height: 64px;          
+    --footer-height: 32px;
+    
+    /* Step 44: 调整左侧边栏宽度 */
+    --sidebar-left-width: 240px;    
+    --sidebar-left-collapsed: 64px; /* 折叠后宽度 */
+    
+    --sidebar-right-width: 340px;   
+    --sidebar-right-collapsed: 64px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* [新增] 折叠状态下的顶部图标容器 */
+/* 这个容器只负责放那个数字图标，不包含文字 */
+.sidebar-collapsed-top {
+    display: none; /* 默认隐藏 */
+    width: 100%;
+    height: 64px; /* 与 Header 等高，保持美观 */
+    align-items: center;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+/* 仅在折叠时显示这个顶部容器 */
+.sidebar-right.collapsed .sidebar-collapsed-top {
+    display: flex;
+}
+
+/* 确保中间的悬浮手柄 (sidebar-toggle-handle) 样式不变 */
+/* 它里面已经包含了 "任务列表" 竖排文字，我们不动它 */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Step 44: 顶层容器改为横向排列 (左侧栏 | 右侧主体) */
+.app-container { 
+    display: flex; 
+    height: 100vh; 
+    width: 100vw;
+}
+
+/* --- Left Sidebar (贯穿式) --- */
+.sidebar-left {
+    width: var(--sidebar-left-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100; /* 确保最高层级 */
+    flex-shrink: 0;
+}
+
+.sidebar-left.collapsed { width: var(--sidebar-left-collapsed); }
+
+/* 品牌区域 (新) */
+.sidebar-brand {
+    height: var(--header-height); /* 与右侧 Header 等高 */
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid transparent; /* 可选：加边框 */
+}
+
+.brand-main {
+    display: flex; align-items: center; gap: 12px;
+    overflow: hidden; white-space: nowrap;
+}
+
+.logo-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: linear-gradient(135deg, #6f42c1, #8e44ad);
+    color: #fff; font-weight: 800; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+}
+
+.app-title { 
+    font-size: 16px; font-weight: 700; color: #111827; 
+    transition: opacity 0.2s;
+}
+
+/* 折叠按钮 (新样式) */
+.toggle-btn {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; cursor: pointer;
+    color: var(--text-sub); transition: all 0.2s;
+}
+.toggle-btn:hover { background: #f3f4f6; color: var(--primary-color); }
+
+/* 1. 隐藏原始品牌区 (Logo + 文字) */
+.sidebar-left.collapsed .brand-main {
+    display: none;
+}
+
+/* 2. 居中显示折叠按钮 */
+.sidebar-left.collapsed .sidebar-brand {
+    padding: 0; 
+    justify-content: center; 
+    align-items: center;
+}
+
+/* 3. 将折叠按钮"伪装"成 Logo */
+.sidebar-left.collapsed .toggle-btn { 
+    width: 36px; /* 尺寸变大，与原Logo一致 */
+    height: 36px;
+    background: linear-gradient(135deg, #6f42c1, #8e44ad); /* 紫色渐变背景 */
+    border-radius: 8px; /* 圆角 */
+    color: #fff; /* 图标变白 */
+    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.3); /* 增加阴影 */
+    
+    /* 布局与定位 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0; /* 清除边距 */
+    transform: none; /* 重置旋转，我们单独控制内部元素 */
+}
+
+/* 4. 伪元素生成 'R' (默认显示) */
+.sidebar-left.collapsed .toggle-btn::before {
+    content: "R";
+    font-weight: 800;
+    font-size: 20px;
+    position: absolute;
+    transition: opacity 0.2s ease;
+    opacity: 1;
+}
+
+/* 5. 内部 SVG 箭头 (默认隐藏，并旋转指向右) */
+.sidebar-left.collapsed .toggle-btn svg {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    transform: rotate(180deg); /* 指向右侧 */
+    position: absolute;
+}
+
+/* --- 交互效果：悬停时 --- */
+
+/* 悬停时背景稍微变深 */
+.sidebar-left.collapsed .toggle-btn:hover {
+    background: linear-gradient(135deg, #5a32a3, #703090);
+}
+
+/* 悬停时隐藏 'R' */
+.sidebar-left.collapsed .toggle-btn:hover::before {
+    opacity: 0;
+}
+
+/* 悬停时显示 箭头 */
+.sidebar-left.collapsed .toggle-btn:hover svg {
+    opacity: 1;
+}
+
+/* 导航菜单 */
+.nav-menu { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 8px; }
+
+.nav-item {
+    display: flex; align-items: center;
+    padding: 12px 16px; cursor: pointer;
+    transition: all 0.2s; 
+    color: var(--text-sub); border-radius: 8px; font-weight: 500;
+    white-space: nowrap; overflow: hidden;
+}
+.nav-item:hover { background-color: #f3f4f6; color: var(--text-main); }
+.nav-item.active { background-color: var(--primary-light); color: var(--primary-color); font-weight: 600; }
+.nav-item .icon { margin-right: 12px; font-size: 20px; min-width: 24px; text-align: center; }
+
+.sidebar-left.collapsed .nav-item { justify-content: center; padding: 12px 0; }
+.sidebar-left.collapsed .nav-item .text { display: none; }
+.sidebar-left.collapsed .nav-item .icon { margin: 0; }
+
+/* --- Right Main Content Wrapper --- */
+.main-content-wrapper {
+    flex: 1; /* 占据剩余宽度 */
+    display: flex; flex-direction: column;
+    height: 100%; overflow: hidden;
+    min-width: 0; /* 防止溢出 */
+}
+
+/* Header (现在在右侧主体内) */
+.app-header {
+    height: var(--header-height);
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: flex-end; /* 内容靠右 */
+    padding: 0 28px; flex-shrink: 0;
+}
+
+/* Content Body Row (Main + Right Sidebar) */
+.content-body-row {
+    display: flex; flex: 1; overflow: hidden; position: relative;
+}
+
+/* --- Content Area --- */
+.content-area {
+    flex: 1; padding: 0; 
+    overflow-y: auto; position: relative;
+    background-color: var(--bg-color);
+    display: flex; flex-direction: column;
+    
+    /* Step 62: 右侧增加外边距，为悬浮手柄留出 40px 的安全通道 */
+    /* 这样不仅防止遮挡内容，也不会遮挡滚动条 */
+    margin-right: 40px; 
+}
+.page-section { 
+    display: none; height: 100%; padding: 24px; 
+    animation: fadeIn 0.3s ease-out; flex-direction: column;
+}
+.page-section.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Right Sidebar --- */
+.sidebar-right {
+    width: var(--sidebar-right-width);
+    background: var(--sidebar-bg);
+    border-left: 1px solid var(--border-color);
+    transition: var(--transition);
+    display: flex; flex-direction: column; z-index: 90;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.02);
+}
+.sidebar-right.collapsed { width: var(--sidebar-right-collapsed); }
+
+.sidebar-header {
+    height: 60px; padding: 0 20px; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff; flex-shrink: 0;
+}
+.sidebar-header .title { font-weight: 700; font-size: 15px; color: var(--text-main); }
+.toggle-btn-right { cursor: pointer; color: var(--text-sub); padding: 4px; border-radius: 4px; }
+.toggle-btn-right:hover { background: #f3f4f6; }
+
+/* --- Footer --- */
+.app-footer {
+    height: var(--footer-height); background: #fff;
+    border-top: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 12px; color: var(--text-sub);
+    flex-shrink: 0;
+}
+
+/* 右侧边栏折叠相关 (Step 44: 确保与新结构兼容) */
+.sidebar-collapsed-view {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    padding-top: 16px;
+    background: #f9fafb;
+}
+.sidebar-right.collapsed .sidebar-header,
+.sidebar-right.collapsed .task-list-container {
+    display: none !important; 
+}
+.sidebar-right.collapsed .sidebar-collapsed-view {
+    display: flex; 
+}/* web/styles/layout.css */
+:root {
+    --primary-color: #6f42c1;       
+    --primary-hover: #5a32a3;
+    --primary-light: #f3f0ff;       
+    --bg-color: #f4f7f9;            
+    --sidebar-bg: #ffffff;          
+    --header-bg: #ffffff;
+    --text-main: #1f2937;           
+    --text-sub: #6b7280;
+    --border-color: #e5e7eb;
+    --success-color: #10b981;       
+    --warning-color: #f59e0b;       
+    --danger-color: #ef4444;        
+    --header-height: 64px;          
+    --footer-height: 32px;
+    
+    /* Step 44: 调整左侧边栏宽度 */
+    --sidebar-left-width: 240px;    
+    --sidebar-left-collapsed: 64px; /* 折叠后宽度 */
+    
+    --sidebar-right-width: 340px;   
+    --sidebar-right-collapsed: 48px;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Step 44: 顶层容器改为横向排列 (左侧栏 | 右侧主体) */
+.app-container { 
+    display: flex; 
+    height: 100vh; 
+    width: 100vw;
+}
+
+/* --- Left Sidebar (贯穿式) --- */
+.sidebar-left {
+    width: var(--sidebar-left-width);
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex; flex-direction: column;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100; /* 确保最高层级 */
+    flex-shrink: 0;
+}
+
+.sidebar-left.collapsed { width: var(--sidebar-left-collapsed); }
+
+/* 品牌区域 (新) */
+.sidebar-brand {
+    height: var(--header-height); /* 与右侧 Header 等高 */
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid transparent; /* 可选：加边框 */
+}
+
+.brand-main {
+    display: flex; align-items: center; gap: 12px;
+    overflow: hidden; white-space: nowrap;
+}
+
+.logo-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: linear-gradient(135deg, #6f42c1, #8e44ad);
+    color: #fff; font-weight: 800; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 8px;
+}
+
+.app-title { 
+    font-size: 16px; font-weight: 700; color: #111827; 
+    transition: opacity 0.2s;
+}
+
+/* 折叠按钮 (新样式) */
+.toggle-btn {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; cursor: pointer;
+    color: var(--text-sub); transition: all 0.2s;
+}
+.toggle-btn:hover { background: #f3f4f6; color: var(--primary-color); }
+
+/* 1. 隐藏原始品牌区 (Logo + 文字) */
+.sidebar-left.collapsed .brand-main {
+    display: none;
+}
+
+/* 2. 居中显示折叠按钮 */
+.sidebar-left.collapsed .sidebar-brand {
+    padding: 0; 
+    justify-content: center; 
+    align-items: center;
+}
+
+/* 3. 将折叠按钮"伪装"成 Logo */
+.sidebar-left.collapsed .toggle-btn { 
+    width: 36px; /* 尺寸变大，与原Logo一致 */
+    height: 36px;
+    background: linear-gradient(135deg, #6f42c1, #8e44ad); /* 紫色渐变背景 */
+    border-radius: 8px; /* 圆角 */
+    color: #fff; /* 图标变白 */
+    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.3); /* 增加阴影 */
+    
+    /* 布局与定位 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0; /* 清除边距 */
+    transform: none; /* 重置旋转，我们单独控制内部元素 */
+}
+
+/* 4. 伪元素生成 'R' (默认显示) */
+.sidebar-left.collapsed .toggle-btn::before {
+    content: "R";
+    font-weight: 800;
+    font-size: 20px;
+    position: absolute;
+    transition: opacity 0.2s ease;
+    opacity: 1;
+}
+
+/* 5. 内部 SVG 箭头 (默认隐藏，并旋转指向右) */
+.sidebar-left.collapsed .toggle-btn svg {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    transform: rotate(180deg); /* 指向右侧 */
+    position: absolute;
+}
+
+/* --- 交互效果：悬停时 --- */
+
+/* 悬停时背景稍微变深 */
+.sidebar-left.collapsed .toggle-btn:hover {
+    background: linear-gradient(135deg, #5a32a3, #703090);
+}
+
+/* 悬停时隐藏 'R' */
+.sidebar-left.collapsed .toggle-btn:hover::before {
+    opacity: 0;
+}
+
+/* 悬停时显示 箭头 */
+.sidebar-left.collapsed .toggle-btn:hover svg {
+    opacity: 1;
+}
+
+/* 导航菜单 */
+.nav-menu { flex: 1; padding: 20px 12px; display: flex; flex-direction: column; gap: 8px; }
+
+.nav-item {
+    display: flex; align-items: center;
+    padding: 12px 16px; cursor: pointer;
+    transition: all 0.2s; 
+    color: var(--text-sub); border-radius: 8px; font-weight: 500;
+    white-space: nowrap; overflow: hidden;
+}
+.nav-item:hover { background-color: #f3f4f6; color: var(--text-main); }
+.nav-item.active { background-color: var(--primary-light); color: var(--primary-color); font-weight: 600; }
+.nav-item .icon { margin-right: 12px; font-size: 20px; min-width: 24px; text-align: center; }
+
+.sidebar-left.collapsed .nav-item { justify-content: center; padding: 12px 0; }
+.sidebar-left.collapsed .nav-item .text { display: none; }
+.sidebar-left.collapsed .nav-item .icon { margin: 0; }
+
+/* --- Right Main Content Wrapper --- */
+.main-content-wrapper {
+    flex: 1; /* 占据剩余宽度 */
+    display: flex; flex-direction: column;
+    height: 100%; overflow: hidden;
+    min-width: 0; /* 防止溢出 */
+}
+
+/* Header (现在在右侧主体内) */
+.app-header {
+    height: var(--header-height);
+    background-color: var(--header-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: flex-end; /* 内容靠右 */
+    padding: 0 28px; flex-shrink: 0;
+}
+
+/* Content Body Row (Main + Right Sidebar) */
+.content-body-row {
+    display: flex; flex: 1; overflow: hidden; position: relative;
+}
+
+/* --- Content Area --- */
+.content-area {
+    flex: 1; padding: 0; 
+    overflow-y: auto; position: relative;
+    background-color: var(--bg-color);
+    display: flex; flex-direction: column;
+}
+
+.page-section { 
+    display: none; height: 100%; padding: 24px; 
+    animation: fadeIn 0.3s ease-out; flex-direction: column;
+}
+.page-section.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- Right Sidebar --- */
+.sidebar-right {
+    width: var(--sidebar-right-width);
+    background: var(--sidebar-bg);
+    border-left: 1px solid var(--border-color);
+    transition: var(--transition);
+    display: flex; flex-direction: column; z-index: 90;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.02);
+    position: relative; /* 确保悬浮手柄可以绝对定位 */
+}
+.sidebar-right.collapsed { width: var(--sidebar-right-collapsed); }
+
+.sidebar-header {
+    height: 60px; padding: 0 20px; border-bottom: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff; flex-shrink: 0;
+}
+.sidebar-header .title { font-weight: 700; font-size: 15px; color: var(--text-main); }
+
+/* --- Step 61: 右侧悬浮折叠手柄 (白色竖排版) --- */
+/* --- Step 63: 右侧悬浮折叠手柄 (加大图标版) --- */
+.sidebar-toggle-handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-100%, -50%);
+    
+    background: #ffffff; 
+    color: var(--text-sub); 
+    border: 1px solid var(--border-color);
+    border-right: none; 
+    border-radius: 8px 0 0 8px; 
+    
+    cursor: pointer;
+    z-index: 102; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.sidebar-toggle-handle:hover {
+    color: var(--primary-color);
+    background: #fafafa;
+    box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+}
+
+/* --- 状态 A: 展开时 --- */
+.sidebar-right:not(.collapsed) .sidebar-toggle-handle {
+    width: 24px;
+    height: 48px;
+}
+.sidebar-right:not(.collapsed) .sidebar-toggle-handle:hover {
+    width: 28px;
+}
+.sidebar-right:not(.collapsed) .handle-icon { display: block; }
+.sidebar-right:not(.collapsed) .handle-content-collapsed { display: none; }
+
+/* [修改点 1] 展开时的箭头图标：加大到 24px */
+.handle-icon {
+    font-size: 24px; /* 原为 16px */
+    font-weight: bold;
+    line-height: 1;
+    font-family: sans-serif;
+    margin-top: -2px; /* 微调垂直居中视觉 */
+}
+
+/* --- 状态 B: 折叠时 --- */
+.sidebar-right.collapsed .sidebar-toggle-handle {
+    width: 34px; 
+    height: auto; 
+    min-height: 120px; 
+    padding: 16px 0;
+    flex-direction: column;
+}
+
+.sidebar-right.collapsed .sidebar-toggle-handle:hover {
+    width: 38px;
+}
+
+.sidebar-right.collapsed .handle-icon { display: none; }
+.sidebar-right.collapsed .handle-content-collapsed { display: flex; }
+
+.handle-content-collapsed {
+    display: none; 
+    flex-direction: column-reverse; 
+    align-items: center;
+    gap: 12px;
+    height: 100%;
+}
+
+/* 竖排文字 (保持 13px 不变) */
+.text-vertical {
+    writing-mode: vertical-rl; 
+    text-orientation: upright; 
+    font-size: 13px; /* 保持不变 */
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--text-sub);
+    -webkit-user-select: none;
+    user-select: none;
+}
+.sidebar-toggle-handle:hover .text-vertical { color: var(--primary-color); }
+
+/* [修改点 2] 折叠时的双箭头图标：加大到 20px */
+.icon-collapsed {
+    font-size: 20px; /* 原为 16px，略微加大 */
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* --- Footer --- */
+.app-footer {
+    height: var(--footer-height); background: #fff;
+    border-top: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; font-size: 12px; color: var(--text-sub);
+    flex-shrink: 0;
+}
+
+/* 右侧边栏折叠时隐藏内部元素 */
+.sidebar-right.collapsed .sidebar-header,
+.sidebar-right.collapsed .task-list-container {
+    display: none !important; 
+}
+
+/* =========================================
+   全局滚动条美化 (Scrollbar Styling)
+   ========================================= */
+
+/* --- 第一套：针对 WebKit 内核 (Chrome, Edge, Safari) --- */
+/* 这部分代码能确保你在绝大多数浏览器中看到紫色细条 */
+
+/* 1. 滚动条整体 (宽/高) */
+::-webkit-scrollbar {
+    width: 6px;  /* 纵向滚动条宽度 */
+    height: 6px; /* 横向滚动条高度 */
+}
+
+/* 2. 滚动条轨道 (背景) */
+::-webkit-scrollbar-track {
+    background: transparent; 
+    border-radius: 3px;
+}
+
+/* 3. 滚动条滑块 (滑块本体) */
+::-webkit-scrollbar-thumb {
+    background-color: #d1d5db; /* 默认浅灰色 */
+    border-radius: 3px;        
+    background-clip: padding-box; 
+    border: 1px solid transparent; 
+    transition: background-color 0.2s;
+}
+
+/* 4. 鼠标悬停 */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #9ca3af; 
+}
+
+/* 5. 激活/拖拽 */
+::-webkit-scrollbar-thumb:active {
+    background-color: var(--primary-color); 
+}
+
+/* --- 第二套：针对 Firefox 和支持新标准的浏览器 --- */
+/* 使用 @supports 包裹，这样不支持的浏览器（和编辑器插件）就不会报错了 */
+@supports (scrollbar-width: thin) {
+    * {
+        scrollbar-width: thin;          /* 细滚动条 */
+        scrollbar-color: #d1d5db transparent; /* 滑块颜色 轨道颜色 */
+    }
+}

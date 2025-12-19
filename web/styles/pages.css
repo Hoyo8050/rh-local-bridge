@@ -1,0 +1,1028 @@
+/* web/styles/pages.css */
+
+/* --- 通用工具类 --- */
+.hidden {
+    display: none !important;
+}
+
+/* =========================================
+   1. API 配置页 (API Configuration)
+   ========================================= */
+.api-layout {
+    display: flex; 
+    flex-direction: column; 
+    gap: 12px; 
+    height: auto; 
+    padding-bottom: 20px; 
+}
+
+/* [新增] 专门针对 API 页面的顶部按钮区 */
+.api-actions-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 0; /* [优化] 移除下边距 (原20px)，完全由 .api-layout 的 gap 控制 */
+    flex-shrink: 0;   /* 防止被压缩 */
+}
+
+.api-key-card {
+    flex: 0 0 auto; 
+    width: 100%;
+    display: flex; flex-direction: column;
+    padding: 24px; 
+}
+
+.account-info-card {
+    flex: 0 0 auto; 
+    width: 100%;
+    display: flex; flex-direction: column;
+}
+
+.api-key-row {
+    display: flex; 
+    align-items: center;
+    gap: 12px; 
+    margin-bottom: 30px; 
+    width: 100%;
+}
+
+.input-wrapper-relative {
+    flex: 0 0 66%; 
+    position: relative;
+}
+
+.input-wrapper-relative .form-input {
+    width: 100%;
+    padding-right: 40px; 
+    height: 44px;
+    font-family: monospace; letter-spacing: 1px; font-size: 14px;
+}
+
+.check-icon-inner {
+    position: absolute; 
+    right: 12px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px; 
+    color: var(--success-color);
+    animation: popIn 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.error-icon-inner {
+    position: absolute; 
+    right: 12px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: var(--danger-color);
+    animation: popIn 0.3s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+.key-actions-group {
+    display: flex; gap: 8px;
+    margin-left: 8px;
+}
+
+.btn-row { 
+    display: flex; 
+    gap: 20px; 
+    justify-content: flex-start; 
+}
+
+.btn-row .btn { 
+    min-width: 160px; 
+} 
+
+.card-header-row {
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.controls { display: flex; align-items: center; gap: 16px; }
+
+.toggle-switch-wrapper { 
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--text-sub); 
+    background: #f8f9fa; padding: 6px 12px; 
+    border-radius: 20px; border: 1px solid #eee;
+}
+
+.poll-status { font-weight: 500; font-size: 13px; color: #999; min-width: 120px; text-align: right;}
+.poll-status.active { color: var(--success-color); } 
+
+.info-grid {
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px; flex: 1;
+}
+
+.info-box {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 30px 20px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: all 0.3s ease;
+}
+.info-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(111, 66, 193, 0.12);
+    border-color: #e0d4fc;
+}
+
+.info-box .icon { font-size: 32px; margin-bottom: 16px; }
+.info-box .label { font-size: 13px; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-box .value { font-size: 28px; font-weight: 700; color: var(--text-main); }
+.info-box .unit { font-size: 14px; color: #aaa; margin-left: 4px; font-weight: normal;}
+
+
+/* =========================================
+   2. 新建/预设任务页 (Task Creation)
+   ========================================= */
+.task-header { 
+    margin-bottom: 20px; display: flex; gap: 16px;
+    flex-shrink: 0; 
+}
+
+.category-tabs {
+    display: flex; 
+    gap: 16px; 
+    margin-bottom: 20px;
+    background: transparent; 
+    padding: 0; 
+    border: none; 
+    width: auto;
+    flex-shrink: 0;
+}
+
+.category-tabs .tab-btn {
+    min-width: 100px; 
+}
+
+.category-tabs .tab-btn.active { 
+    background: var(--primary-color); 
+    color: #fff; 
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+.category-tabs .tab-btn:not(.active) {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: var(--text-sub);
+}
+.category-tabs .tab-btn:not(.active):hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f3f0ff;
+}
+
+.task-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 16px; 
+    margin-bottom: 20px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    min-height: 0;
+    flex-shrink: 0;
+}
+
+/* Step 72: 管理按钮适配 */
+#btn-manage-presets-toggle {
+    height: 60px; /* 与任务栏等高 */
+    padding: 0 24px;
+    flex-shrink: 0;
+    min-width: 110px;
+    font-weight: 600;
+}
+
+#btn-manage-presets-toggle.active {
+    background: var(--warning-color);
+    color: #fff;
+    border-color: var(--warning-color);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* 预设按钮在管理模式下的样式 */
+.task-bar button.editing-mode {
+    border-style: dashed;
+    border-color: var(--warning-color);
+    background: #fffbeb;
+    color: #d97706;
+}
+.task-bar button.editing-mode:hover {
+    transform: scale(1.05);
+    background: #fef3c7;
+}
+.task-bar button.editing-mode::before {
+    content: "✏️ "; /* 增加编辑图标提示 */
+}
+
+.task-bar {
+    flex: 1; 
+    min-width: 0; 
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px 16px; 
+    height: 60px; 
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    -ms-overflow-style: none;
+}
+
+@supports (scrollbar-width: none) {
+    .task-bar {
+        scrollbar-width: none;
+    }
+}
+
+.task-bar::-webkit-scrollbar { 
+    display: none; 
+}
+
+.task-bar button {
+    padding: 8px 20px;
+    font-size: 13px; border-radius: 20px;
+    border: 1px solid #eee; background: #f9fafb; color: #4b5563;
+    white-space: nowrap; transition: all 0.2s;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.task-bar button:hover {
+    border-color: var(--primary-color); color: var(--primary-color);
+    background: #fff; transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.task-bar button.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(111, 66, 193, 0.4);
+    font-weight: 600;
+    transform: translateY(-1px);
+}
+
+.btn-run-large {
+    height: 60px; 
+    padding: 0 32px;
+    font-size: 16px;
+}
+
+.split-layout {
+    display: flex; gap: 20px;
+    flex: 1; 
+    min-height: 0;
+}
+
+.panel {
+    background: #fff; border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-card); overflow: hidden;
+}
+.panel-left { flex: 0 0 400px; }
+.panel-right { flex: 1; }
+
+.panel-header { 
+    padding: 12px 20px; background: #fff; 
+    border-bottom: 1px solid #f0f0f0; font-weight: 600; 
+    color: var(--text-main); font-size: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 50px;
+    position: relative;
+}
+.panel-body { padding: 20px; overflow-y: auto; flex: 1; background: #fcfcfc; }
+
+/* --- Step 50: 任务切换导航按钮组 --- */
+.task-nav-group {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* 绝对居中 */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-task-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid #eee;
+    background: #fff;
+    color: var(--text-main);
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.nav-task-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f3f0ff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.nav-task-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #f9fafb;
+    color: #9ca3af;
+    border-color: #eee;
+}
+
+/* --- Step 50: 任务名称显示 --- */
+.task-name-display {
+    position: absolute;
+    left: 100%; /* 位于按钮组右侧 */
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 15px; 
+    
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap; 
+    font-family: system-ui, -apple-system, sans-serif;
+    
+    background: none;
+    border: none;
+    padding: 0;
+    pointer-events: none;
+}
+
+/* --- 任务卡片选中状态 --- */
+.task-card.active-card {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 1px var(--primary-color), 0 8px 20px rgba(111, 66, 193, 0.15) !important;
+    background-color: #fcfaff;
+    transform: translateX(-4px);
+}
+
+/* 结果预览区 */
+.result-canvas {
+    flex: 1; background: #f3f4f6; 
+    display: flex; justify-content: center; align-items: center;
+    position: relative; overflow: hidden;
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 20px 20px; 
+}
+.canvas-placeholder { 
+    color: #9ca3af; font-size: 14px; 
+    display: flex; flex-direction: column; align-items: center; gap: 12px; 
+}
+
+/* =========================================
+   3. 作品库 (Gallery)
+   ========================================= */
+.gallery-layout { 
+    display: flex; flex-direction: column; height: 100%; 
+    background: #fff; border-radius: 10px; 
+    border: 1px solid var(--border-color); overflow: hidden;
+}
+
+/* [Step 84] 作品库导航优化 */
+.gallery-nav { 
+    display: flex; 
+    justify-content: space-between; /* 两端对齐 */
+    align-items: center;
+    padding: 12px 24px; 
+    border-bottom: 1px solid #eee; background: #fcfcfc;
+}
+
+.gallery-tabs-group {
+    display: flex;
+    gap: 12px;
+}
+
+/* 设置按钮样式 */
+.btn-icon-setting {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: var(--text-sub);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.btn-icon-setting:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #f3f0ff;
+}
+
+.g-nav-btn {
+    padding: 10px 28px; 
+    border-radius: 8px; 
+    font-size: 15px; 
+    font-weight: 600; 
+    border: 1px solid transparent; 
+    background: transparent; 
+    color: var(--text-sub); 
+    cursor: pointer; 
+    transition: all 0.2s ease;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.g-nav-btn:hover { 
+    background: #eee; 
+    color: var(--text-main);
+}
+
+.g-nav-btn.active { 
+    background: #e0e7ff; 
+    color: var(--primary-color); 
+    border-color: #c7d2fe; 
+    box-shadow: 0 2px 6px rgba(111, 66, 193, 0.15); 
+}
+
+.gallery-content { display: flex; flex: 1; overflow: hidden; }
+
+.gallery-sidebar {
+    width: 320px; border-right: 1px solid #eee;
+    display: flex; flex-direction: column; background: #fff;
+}
+.file-list-header {
+    display: flex; justify-content: space-between; padding: 10px 16px; 
+    background: #f8f9fa; font-size: 12px; color: #888; font-weight: 600;
+    border-bottom: 1px solid #eee;
+}
+.file-list { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+.file-item {
+    padding: 10px 16px; border-bottom: 1px solid #f7f7f7; cursor: pointer; 
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.1s;
+}
+.file-item:hover { background: #f9fafb; }
+.file-item.active { background: #f0f7ff; border-left: 3px solid var(--primary-color); }
+
+.file-info-main { display: flex; flex-direction: column; gap: 4px; max-width: 70%; }
+.file-name { font-size: 13px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-meta { font-size: 11px; color: #aaa; }
+.file-size { font-size: 11px; color: #888; font-family: monospace; }
+
+.file-status-bar {
+    padding: 8px 16px; border-top: 1px solid #eee; 
+    font-size: 11px; color: #aaa; text-align: center; background: #fafafa;
+}
+
+.gallery-preview { 
+    flex: 1; 
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center; 
+    background: #f3f4f6; padding: 20px; position: relative;
+    
+    /* [Step 67 核心修复] 添加以下两行 */
+    min-width: 0;      /* 允许 Flex 子项被压缩到 0，防止被大图撑死 */
+    overflow: hidden;  /* 超出部分隐藏，防止撑破布局 */
+}
+
+.preview-placeholder { color: #999; font-size: 14px; }
+
+.preview-img, .preview-video {
+    max-width: 100%; max-height: 80%; 
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1); 
+    border-radius: 8px; background: #fff;
+}
+
+/* =========================================
+   4. 右侧任务列表 (优化版 v58)
+   ========================================= */
+.task-list-container {
+    padding: 20px; overflow-y: auto; flex: 1; 
+    background: #f9fafb; 
+}
+
+.empty-task-list {
+    text-align: center; color: #9ca3af; margin-top: 40px;
+    font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.empty-task-list::before { content: "📭"; font-size: 32px; opacity: 0.5; }
+
+.task-card {
+    background: #fff; border-radius: 12px;
+    padding: 16px 20px; margin-bottom: 16px;
+    border: 1px solid transparent; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 1px 0 rgba(0,0,0,0.02);
+    transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+}
+
+.task-card::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+    transition: background 0.3s;
+}
+.task-card:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+
+.task-card.running::before { background: var(--primary-color); }
+.task-card.queued::before { background: var(--warning-color); }
+.task-card.success::before { background: var(--success-color); }
+.task-card.failed::before { background: var(--danger-color); }
+
+/* Card Top: 任务名 + 按钮 */
+.card-top { 
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 12px; 
+}
+.t-name { 
+    font-weight: 600; font-size: 15px; color: #1f2937; 
+    line-height: 1.4; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;
+}
+
+/* Card Mid: 完整ID + 状态 */
+.card-mid { 
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-bottom: 16px; 
+}
+
+/* 完整ID样式 */
+.t-full-id {
+    font-size: 11px;
+    color: #9ca3af;
+    font-family: monospace;
+    background: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+    max-width: 65%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.5px;
+}
+
+.status-badge {
+    font-size: 11px; padding: 4px 10px; border-radius: 20px; 
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    flex-shrink: 0;
+}
+.task-card.running .status-badge { background: #ede9fe; color: var(--primary-color); }
+.task-card.queued .status-badge { background: #fef3c7; color: #d97706; }
+.task-card.success .status-badge { background: #d1fae5; color: #059669; }
+.task-card.failed .status-badge { background: #fee2e2; color: #dc2626; }
+
+/* Card Bottom: 创建时间 + 用时 */
+.card-btm { 
+    display: flex; justify-content: space-between; align-items: center; 
+    border-top: 1px solid #f3f4f6; padding-top: 12px;
+}
+.start-time { font-size: 11px; color: #d1d5db; font-family: monospace; }
+.t-time { 
+    font-size: 13px; color: #4b5563; font-weight: 600; 
+    font-variant-numeric: tabular-nums; 
+    font-family: monospace;
+}
+
+/* 确保折叠视图是 Flex 布局并居中 */
+.sidebar-collapsed-view {
+    display: none; /* 默认隐藏，由 layout.css 控制显示 */
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-top: 24px; /* 给顶部留出距离，避免和手柄打架，如果手柄在中间则无所谓 */
+    background: #f9fafb;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* 针对折叠状态下的图标进行微调 (可选) */
+#task-monitor-icon-collapsed {
+    margin: 0; /* 移除 margin-left: auto，强制居中 */
+    flex-shrink: 0;
+    /* 确保 z-index 高于背景 */
+    z-index: 10;
+}
+
+.sidebar-right.collapsed .sidebar-header,
+.sidebar-right.collapsed .task-list-container {
+    display: none !important; 
+}
+
+.sidebar-right.collapsed .sidebar-collapsed-view {
+    display: flex; 
+}
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-sub);
+    letter-spacing: 6px;
+    margin-top: auto;
+    margin-bottom: auto;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.toggle-btn-collapsed {
+    cursor: pointer;
+    padding: 8px;
+    color: var(--text-sub);
+    font-size: 14px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+}
+.toggle-btn-collapsed:hover {
+    background: #eee;
+    color: var(--primary-color);
+}
+
+#modal-btn-auto {
+    padding: 0 24px;
+    min-width: 110px;
+    white-space: nowrap;
+    justify-content: center;
+    height: 40px; 
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* [Step 64] 修改：左侧栏默认宽度 */
+.gallery-sidebar {
+    width: 320px; /* 默认宽度 (也是最小宽度) */
+    flex-shrink: 0; /* 禁止自动压缩 */
+    border-right: none; /* 移除原来的右边框，改由 resizer 充当视觉分割 */
+    display: flex; flex-direction: column; background: #fff;
+    transition: none; /* 禁用过渡，保证拖拽流畅 */
+}
+
+/* [Step 64] 新增：拖拽手柄样式 */
+/* [Step 65] 修复：增强拖拽条的可见性 */
+.gallery-resizer {
+    width: 10px;  /* 加宽到 10px，更容易抓取 */
+    background: #e5e7eb; /* 加深颜色 (深灰) */
+    cursor: col-resize; 
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100; /* 提高层级，防止被遮挡 */
+    border-left: 1px solid #d1d5db;  /* 左边框 */
+    border-right: 1px solid #d1d5db; /* 右边框 */
+    transition: all 0.2s;
+    
+    /* 垂直居中的小图标装饰 (可选，像个把手) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none; /* 防止触摸屏滚动干扰 */
+}
+
+/* 装饰：在中间加一个小竖条，像手柄一样 */
+.gallery-resizer::after {
+    content: "";
+    width: 2px;
+    height: 20px;
+    background: #9ca3af;
+    border-radius: 2px;
+}
+
+/* 悬停或拖拽时：变紫色高亮 */
+.gallery-resizer:hover, .gallery-resizer.resizing {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(111, 66, 193, 0.3); /* 发光效果 */
+}
+.gallery-resizer:hover::after, .gallery-resizer.resizing::after {
+    background: #fff; /* 手柄变白 */
+}
+
+/* 防止拖拽时选中文字 (保持 Step 64 的修复顺序) */
+body.resizing-cursor {
+    cursor: col-resize;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ... 原有代码 ... */
+
+/* Step 75: 新增预设按钮 (+) 样式 */
+.btn-add-preset {
+    width: 40px; /* 正方形或圆形 */
+    padding: 0;
+    border: 2px dashed var(--primary-color); /* 虚线边框 */
+    background: #fdfaff;
+    color: var(--primary-color);
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-add-preset:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-style: solid; /* 悬停变实线 */
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+}
+
+/* --- Step 77: 任务栏智能滚动样式 --- */
+
+/* 1. 滚动容器：相对定位，占据剩余空间 */
+.task-bar-scroll-wrapper {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 60px; /* 与按钮等高 */
+}
+
+
+.task-bar::-webkit-scrollbar { display: none; }
+
+/* 3. 滚动按钮 (左右悬浮) */
+.task-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.task-scroll-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.task-scroll-btn.left { left: -14px; }
+.task-scroll-btn.right { right: -14px; }
+
+/* 4. 隐藏状态 */
+.task-scroll-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Step 78: 修复版 - 任务栏智能滚动样式 --- */
+
+/* 1. 滚动容器 (变身为“视觉容器”) */
+/* 我们把原本属于 task-bar 的白色背景和边框移到这个 Wrapper 上 */
+.task-bar-scroll-wrapper {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 60px; /* 与按钮等高 */
+    
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0 10px; /* 留出一点内边距 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+/* 2. 任务栏本体 (仅当它位于滚动容器内部时) */
+/* 使用后代选择器，确保不影响"新建任务"页面的老式 task-bar */
+.task-bar-scroll-wrapper .task-bar {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 4px; /* 按钮之间的间距 */
+    
+    /* 重置样式：因为外层Wrapper已经有背景和边框了 */
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0;
+}
+
+/* 3. 统一的滚动条隐藏处理 (兼容性修复) */
+/* 针对所有 task-bar 隐藏滚动条 */
+/* --- Step 79: 终极滚动条兼容方案 --- */
+
+/* 1. 针对 WebKit 内核 (Chrome < 121, Safari, Edge 旧版) */
+.task-bar::-webkit-scrollbar { 
+    display: none; 
+}
+
+/* 2. 针对支持标准属性的浏览器 (Firefox, Chrome 121+) */
+/* 使用 @supports 包裹，告诉编辑器："只有浏览器支持这个属性时才用它，别报错了" */
+@supports (scrollbar-width: none) {
+    .task-bar {
+        scrollbar-width: none;
+    }
+}
+
+/* 3. 针对 IE/Edge Legacy */
+.task-bar {
+    -ms-overflow-style: none; 
+}
+
+/* 4. 滚动按钮 (左右悬浮) */
+.task-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #666;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+}
+
+.task-scroll-btn:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* 按钮定位微调 */
+.task-scroll-btn.left { left: -14px; }
+.task-scroll-btn.right { right: -14px; }
+
+/* 隐藏状态 */
+.task-scroll-btn.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- 新增：API 页面的顶部按钮区 (位于卡片外部) --- */
+.api-actions-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px; /* 与下方卡片保持距离 */
+}
+
+/* 按钮尺寸微调 (可选，让它们看起来更显眼) */
+.api-actions-header .btn {
+    min-width: 120px;
+    height: 40px;
+}
+
+/* --- 修改：API Key 卡片内部 --- */
+
+/* 路径获取行 */
+.api-source-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px; /* 与下方的输入框保持距离 */
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0; /* 加一条分割线更清晰 */
+}
+
+.source-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-sub);
+}
+
+.source-btns {
+    display: flex;
+    gap: 10px;
+}
+
+.source-btns a {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* API Key 输入行优化 */
+.api-key-row {
+    display: flex; 
+    align-items: center;
+    gap: 12px; 
+    margin-bottom: 0;    /* [优化] 移除底部间距 (原30px)，因为它是卡片里最后一个元素 */
+    width: 100%;
+}
+
+
+/* 预处理任务 (Pending Task) - 视觉增强版 */
+.task-card.pending_start {
+    /* [修改] 背景色改为更清淡的蓝色，与正式任务区分更明显 */
+    background: #f0f9ff; 
+    
+    /* [修改] 边框加粗到 2px，颜色加深 */
+    border: 3px dashed #7dd3fc; 
+    
+    /* 保持半透明，体现"未激活"感 */
+    opacity: 0.95;
+    
+    /* 移除阴影，使其看起来像"贴"在纸上，而不是浮起来的卡片 */
+    box-shadow: none;
+}
+
+/* 侧边条颜色 */
+.task-card.pending_start::before {
+    background: #38bdf8; 
+}
+
+/* 状态标签样式 */
+.task-card.pending_start .status-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-weight: 800; /* 字体加粗 */
+}
+
+/* --- 优化后的虚线分割线 --- */
+.queue-separator {
+    margin: 24px 0 16px 0; /* [优化] 增加上下间距，视觉更舒适 */
+    height: 0;
+    border: none;
+    border-top: 2px dashed #e2e8f0; /* 纯净的虚线，无文字 */
+    width: 100%;
+    opacity: 0.8;
+}
+
+/* 确保之前的文字样式被覆盖/隐藏 */
+.queue-separator::before { display: none; }
+.queue-separator span { display: none; }
+
+
+/* --- 候补卡片样式微调 --- */
+.task-card.pending_start {
+    background: #f0f9ff;
+    border: 2px dashed #7dd3fc;
+    opacity: 0.95;
+    box-shadow: none;
+}
+
+.task-card.pending_start::before { background: #38bdf8; }
+
+.task-card.pending_start .status-badge {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-weight: 800;
+}
+
+/* web/styles/pages.css */
+
+/* --- 候补任务排队信息样式 --- */
+.queue-info {
+    font-size: 13px;
+    color: #6b7280; /* 灰色文本 */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.queue-highlight {
+    color: var(--primary-color); /* 紫色高亮 */
+    font-weight: 800;
+    font-size: 16px; /* 数字稍微大一点 */
+    font-family: monospace; /* 等宽字体，数字更好看 */
+}
