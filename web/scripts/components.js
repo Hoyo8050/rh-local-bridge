@@ -13,6 +13,13 @@ const State = {
     taskCount: 1 // [新增] 默认为 1并发
 };
 
+// [新增] 全局提示工具函数 (替代 alert)
+window.showToast = function(msg, type = 'success') {
+    window.dispatchEvent(new CustomEvent('show-toast', { 
+        detail: { msg: msg, type: type } 
+    }));
+};
+
 // --- 全局参数缓存系统 (自动保存，手动恢复) ---
 const ParamCache = {}; // 结构: { appId: { nodeId: value } }
 const FileCache = {};  // 结构: { appId: { nodeId: {file, type, name} } }
@@ -764,24 +771,51 @@ function initNewTaskSection() {
     const modal = document.getElementById('modal-create-task');
     const btnRun = document.getElementById('btn-run-new-task');
 
+    // [核心修复] 双重保险发送数据
+    // 1. 立即尝试发送一次 (针对 Alpine 已经就绪的情况)
     renderTaskBar();
-    
-    // [修改] 注入"输入上次参数"按钮
-    injectRestoreButton('page-new-task', () => {
-        if (!activeWebappId) return alert("请先选择一个任务");
-        const appIdStr = String(activeWebappId);
+
+    // 2. 监听 HTML 发来的"我准备好了"请求 (针对 HTML 加载慢的情况)
+    const barEl = document.getElementById('new-task-bar');
+    if (barEl) {
+        // 移除旧监听器 (防止重复绑定)
+        const newBarEl = barEl.cloneNode(true);
+        barEl.parentNode.replaceChild(newBarEl, barEl);
         
-        // 检查是否有缓存
+        // 绑定请求监听
+        newBarEl.addEventListener('request-tasks', () => {
+            console.log("📥 收到 HTML 初始化请求，重新发送数据...");
+            renderTaskBar();
+        });
+
+        // 绑定点击监听 (处理业务逻辑)
+        newBarEl.addEventListener('task-selected', (e) => {
+            const { task, index } = e.detail;
+            if (isManagementMode) {
+                // 管理模式：打开编辑弹窗 (需查找真实索引)
+                const realIndex = savedTasks.findIndex(t => t.name === task.name);
+                if (realIndex !== -1) openModalForEdit(realIndex);
+            } else {
+                // 普通模式：加载任务参数
+                loadTaskToMainUI(task);
+            }
+        });
+    }
+    
+    // [补充保险] 等待 300ms 再发一次，防止极端竞态
+    setTimeout(renderTaskBar, 300);
+
+    // --- 下面是原来的按钮逻辑，保持不变 ---
+    
+    // 注入"输入上次参数"按钮
+    injectRestoreButton('page-new-task', () => {
+        if (!activeWebappId) return showGlobalToast('⚠️ 请先选择一个任务');
+        const appIdStr = String(activeWebappId);
         const hasParams = ParamCache[appIdStr] && Object.keys(ParamCache[appIdStr]).length > 0;
         const hasFiles = FileCache[appIdStr] && Object.keys(FileCache[appIdStr]).length > 0;
-        
-        if (!hasParams && !hasFiles) {
-            return showGlobalToast && showGlobalToast('⚠️ 暂无该任务的记录');
-        }
-
-        // 强制带缓存重绘
+        if (!hasParams && !hasFiles) return showGlobalToast('⚠️ 暂无该任务的记录');
         renderMainConfigForm('new-task-config-area', activeNodeInfoList, activeWebappId, true);
-        showGlobalToast && showGlobalToast('📝 参数已恢复');
+        showGlobalToast('📝 参数已恢复');
     });
 
     if(btnManage) btnManage.addEventListener('click', () => {
@@ -793,59 +827,76 @@ function initNewTaskSection() {
             btnManage.textContent = "🛠️ 任务管理";
             btnManage.classList.add('btn-outline');
         }
-        renderTaskBar(); 
+        renderTaskBar(); // 切换模式时刷新
     });
 
     if(btnCreate) btnCreate.addEventListener('click', () => openModalForCreate());
     document.getElementById('modal-btn-cancel')?.addEventListener('click', () => modal.classList.add('hidden'));
 
+    // 删除按钮逻辑
     const btnDelete = document.getElementById('modal-btn-delete');
-    if(btnDelete) btnDelete.addEventListener('click', () => {
-        if (editingTaskIndex === -1) return;
-        const taskName = savedTasks[editingTaskIndex].name;
-        if(confirm(`确定要永久删除任务 "${taskName}" 吗？`)) {
-            savedTasks.splice(editingTaskIndex, 1);
-            localStorage.setItem('rh_saved_tasks', JSON.stringify(savedTasks));
-            renderTaskBar(); 
-            modal.classList.add('hidden'); 
-        }
-    });
+    if(btnDelete) {
+        const newBtnDelete = btnDelete.cloneNode(true);
+        btnDelete.parentNode.replaceChild(newBtnDelete, btnDelete);
+        newBtnDelete.addEventListener('click', () => {
+            if (editingTaskIndex === -1) return;
+            const taskName = savedTasks[editingTaskIndex].name;
+            if(confirm(`确定要永久删除任务 "${taskName}" 吗？`)) {
+                savedTasks.splice(editingTaskIndex, 1);
+                localStorage.setItem('rh_saved_tasks', JSON.stringify(savedTasks));
+                renderTaskBar(); 
+                modal.classList.add('hidden'); 
+            }
+        });
+    }
 
+    // 自动获取按钮逻辑
     const btnAuto = document.getElementById('modal-btn-auto');
-    if(btnAuto) btnAuto.addEventListener('click', async () => {
-        if(!checkApiKey()) return; 
-        const appId = document.getElementById('modal-webapp-id').value.trim();
-        if(!appId) return alert("请输入 AppID");
-        
-        const oldText = btnAuto.textContent;
-        btnAuto.textContent = "获取中...";
-        const res = await API.getWebappInfo(State.apiKey, appId);
-        btnAuto.textContent = oldText;
-
-        if(res.code === 0 && res.data && res.data.nodeInfoList) {
-            editingNodeInfoList = res.data.nodeInfoList;
-            document.getElementById('modal-task-name').value = res.data.webappName || '未命名任务';
-            renderModalParamsTable();
-        } else {
-            alert("获取失败: " + res.msg); 
-        }
-    });
-
-    document.getElementById('modal-btn-save')?.addEventListener('click', () => {
-        const taskName = document.getElementById('modal-task-name').value || '未命名任务';
-        const appId = document.getElementById('modal-webapp-id').value;
-        if(editingNodeInfoList.length === 0) return alert("参数列表为空");
-        const taskData = {
-            name: taskName, appId: appId,
-            nodeInfoList: JSON.parse(JSON.stringify(editingNodeInfoList))
-        };
-        if (editingTaskIndex === -1) savedTasks.push(taskData);
-        else savedTasks[editingTaskIndex] = taskData;
-        localStorage.setItem('rh_saved_tasks', JSON.stringify(savedTasks));
-        renderTaskBar();
-        if (editingTaskIndex === -1) loadTaskToMainUI(taskData);
-        modal.classList.add('hidden');
-    });
+    if(btnAuto) {
+         const newBtnAuto = btnAuto.cloneNode(true);
+         btnAuto.parentNode.replaceChild(newBtnAuto, btnAuto);
+         newBtnAuto.addEventListener('click', async () => {
+            if(!checkApiKey()) return; 
+            const appId = document.getElementById('modal-webapp-id').value.trim();
+            if(!appId) return alert("请输入 AppID"); // 简单弹窗即可
+            
+            const oldText = newBtnAuto.textContent;
+            newBtnAuto.textContent = "获取中...";
+            const res = await API.getWebappInfo(State.apiKey, appId);
+            newBtnAuto.textContent = oldText;
+    
+            if(res.code === 0 && res.data && res.data.nodeInfoList) {
+                editingNodeInfoList = res.data.nodeInfoList;
+                document.getElementById('modal-task-name').value = res.data.webappName || '未命名任务';
+                renderModalParamsTable();
+            } else {
+                alert("获取失败: " + res.msg); 
+            }
+        });
+    }
+    
+    // 保存按钮逻辑
+    const btnSave = document.getElementById('modal-btn-save');
+    if(btnSave) {
+        const newBtnSave = btnSave.cloneNode(true);
+        btnSave.parentNode.replaceChild(newBtnSave, btnSave);
+        newBtnSave.addEventListener('click', () => {
+            const taskName = document.getElementById('modal-task-name').value || '未命名任务';
+            const appId = document.getElementById('modal-webapp-id').value;
+            if(editingNodeInfoList.length === 0) return alert("参数列表为空");
+            const taskData = {
+                name: taskName, appId: appId,
+                nodeInfoList: JSON.parse(JSON.stringify(editingNodeInfoList))
+            };
+            if (editingTaskIndex === -1) savedTasks.push(taskData);
+            else savedTasks[editingTaskIndex] = taskData;
+            localStorage.setItem('rh_saved_tasks', JSON.stringify(savedTasks));
+            renderTaskBar();
+            if (editingTaskIndex === -1) loadTaskToMainUI(taskData);
+            modal.classList.add('hidden');
+            showGlobalToast("✅ 任务已保存");
+        });
+    }
 
     if(btnRun) btnRun.addEventListener('click', () => {
         if(!checkApiKey()) return;
@@ -896,32 +947,20 @@ function openModalForEdit(index) {
     document.getElementById('modal-create-task').classList.remove('hidden');
 }
 
+// [修正] 渲染函数：不再手动操作 DOM，只发送数据给 Alpine
 function renderTaskBar() {
-    const bar = document.getElementById('new-task-bar');
-    if(!bar) return;
-    bar.innerHTML = '';
-    if (savedTasks.length === 0) {
-        bar.innerHTML = '<span class="placeholder-text">暂无任务，请点击左上角创建</span>';
-        return;
-    }
-    savedTasks.forEach((task, index) => {
-        const btn = document.createElement('button');
-        btn.className = isManagementMode ? 'btn btn-warning' : 'btn btn-outline btn-primary';
-        btn.innerHTML = isManagementMode ? `✏️ ${task.name}` : task.name;
-        btn.onclick = () => {
-            const allBtns = bar.querySelectorAll('button');
-            allBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            if (isManagementMode) {
-                openModalForEdit(index);
-            } else {
-                loadTaskToMainUI(task);
-            }
-        };
-        bar.appendChild(btn);
-    });
+    // 1. 获取最新数据
+    const taskList = savedTasks || []; 
+    const mode = isManagementMode;
+    
+    // 2. 发送信号给 HTML (Alpine.js)
+    // 告诉界面："这是最新的任务列表，你自己看着办"
+    window.dispatchEvent(new CustomEvent('refresh-tasks', { 
+        detail: { list: taskList, mode: mode } 
+    }));
+    
+    console.log(`📤 已发送任务更新信号: ${taskList.length} 个任务`);
 }
-
 function loadTaskToMainUI(task) {
     activeNodeInfoList = JSON.parse(JSON.stringify(task.nodeInfoList));
     activeWebappId = task.appId;

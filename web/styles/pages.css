@@ -1026,3 +1026,17 @@ body.resizing-cursor {
     font-size: 16px; /* 数字稍微大一点 */
     font-family: monospace; /* 等宽字体，数字更好看 */
 }
+
+/* [修复] 强制隐藏滚动条但保留滚动功能 */
+.no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+/* 使用 @supports 确保只有支持该属性的浏览器才应用 */
+@supports (scrollbar-width: none) {
+    .no-scrollbar {
+        scrollbar-width: none;  /* Firefox */
+    }
+}

@@ -8,6 +8,9 @@
     
     <link rel="icon" href="favicon.png?v=2024" type="image/png">
 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
     <link rel="stylesheet" href="styles/layout.css">
     <link rel="stylesheet" href="styles/components.css">
     <link rel="stylesheet" href="styles/pages.css">
@@ -170,9 +173,64 @@
                         </div>
                         
                         <div class="task-bar-container">
-                            <div class="task-bar" id="new-task-bar">
-                                <span class="placeholder-text">暂无任务，请点击左上角创建</span>
+                            <div id="new-task-bar" 
+                             class="relative flex items-center w-full h-[64px] bg-white border border-gray-200 rounded-xl shadow-sm select-none overflow-hidden"
+                             x-data="{ 
+                                tasks: [], 
+                                activeIndex: -1, 
+                                isManage: false,
+                                scrollLeft() { $refs.scrollBox.scrollBy({ left: -200, behavior: 'smooth' }) },
+                                scrollRight() { $refs.scrollBox.scrollBy({ left: 200, behavior: 'smooth' }) }
+                             }"
+                             @refresh-tasks.window="tasks = $event.detail.list; isManage = $event.detail.mode;"
+                        >
+                            <div x-show="tasks.length === 0" 
+                                 class="absolute inset-0 flex items-center justify-center pointer-events-none text-gray-400 text-sm italic"
+                                 x-transition.opacity>
+                                暂无任务，请点击左上角创建
                             </div>
+
+                            <div x-show="tasks.length > 0" 
+                                 class="flex items-center w-full h-full relative"
+                                 x-transition.opacity>
+                                
+                                <button 
+                                    @click="scrollLeft()"
+                                    x-show="tasks.length > 3"
+                                    class="absolute left-1 z-20 w-8 h-8 rounded-full bg-white shadow-md border border-gray-100 text-gray-500 hover:text-purple-600 hover:scale-110 flex items-center justify-center transition-all cursor-pointer"
+                                    title="向左滚动"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                                </button>
+            
+                                <div x-ref="scrollBox" class="flex items-center gap-3 overflow-x-auto w-full h-full px-10 no-scrollbar scroll-smooth">
+                                    <template x-for="(task, index) in tasks" :key="index">
+                                        <button 
+                                            @click="activeIndex = index; $dispatch('task-selected', {task: task, index: index})"
+                                            :class="{
+                                                'bg-purple-600 text-white shadow-md font-bold scale-105': activeIndex === index && !isManage,
+                                                'bg-gray-50 text-gray-600 hover:bg-purple-50 hover:text-purple-600 border-gray-200': activeIndex !== index && !isManage,
+                                                'bg-amber-100 text-amber-700 border-amber-300 border-dashed': isManage
+                                            }"
+                                            class="flex-shrink-0 px-5 py-2 rounded-full text-sm border transition-all duration-200 whitespace-nowrap flex items-center gap-2 outline-none"
+                                        >
+                                            <span x-show="isManage">✏️</span>
+                                            <span x-text="task.name"></span>
+                                        </button>
+                                    </template>
+                                </div>
+            
+                                <button 
+                                    @click="scrollRight()"
+                                    x-show="tasks.length > 3"
+                                    class="absolute right-1 z-20 w-8 h-8 rounded-full bg-white shadow-md border border-gray-100 text-gray-500 hover:text-purple-600 hover:scale-110 flex items-center justify-center transition-all cursor-pointer"
+                                    title="向右滚动"
+                                >
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                                </button>
+                            </div>
+                            </div>
+                            
                             <button class="btn btn-success btn-run-large" id="btn-run-new-task" aria-label="执行当前新建任务">
                                 🚀 发起运行
                             </button>
@@ -340,6 +398,32 @@
                 <button class="btn-text" id="btn-show-log">📜 日志信息</button>
             </footer>
         </div>
+    </div>
+
+    <div 
+        x-data="{ show: false, message: '', type: 'success' }"
+        x-cloak
+        @show-toast.window="
+            message = $event.detail.msg; 
+            type = $event.detail.type || 'success';
+            show = true; 
+            setTimeout(() => show = false, 2000)
+        "
+        x-show="show"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-4 scale-90"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 scale-90"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 min-w-[200px] justify-center pointer-events-none"
+        :class="{
+            'bg-gray-800 text-white': type === 'success',
+            'bg-red-600 text-white': type === 'error'
+        }"
+    >
+        <span x-text="type === 'success' ? '✅' : '❌'" class="text-xl"></span>
+        <span x-text="message" class="font-medium text-lg"></span>
     </div>
 
     <div class="modal-overlay hidden restart-overlay" id="modal-restart">

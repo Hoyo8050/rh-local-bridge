@@ -1,4 +1,11 @@
 /* web/styles/layout.css */
+/* [新增] Alpine.js 隐身斗篷：防止页面加载时看到乱码或未初始化的组件 */
+[x-cloak] { 
+    display: none !important; 
+}
+
+
+/* web/styles/layout.css */
 :root {
     --primary-color: #6f42c1;       
     --primary-hover: #5a32a3;
