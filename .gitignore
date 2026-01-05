@@ -7,3 +7,4 @@ inputs/*
 !inputs/.gitkeep
 .DS_Store
 Thumbs.db
+git_tool.pyw
